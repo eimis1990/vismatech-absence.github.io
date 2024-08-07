@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gmail Sender</title>
+  <link rel="stylesheet" href="flatpickr/flatpickr.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="header">
+    <img src="images/logo.svg" alt="Visma Logo">
+    <p>Quick and easy absence registration.</p>
+  </div>
+  <div class="content">
+    <label for="subject">Subject</label>
+    <div class="select-menu">
+      <div class="select-btn">
+          <span class="sBtn-text">Select your option</span>
+          <i class="bx bx-chevron-down"></i>
+      </div>
+      <ul class="options">
+        <li class="option" data-value="Vacation">
+          <span class="option-text">Vacation</span>
+        </li>
+        <li class="option" data-value="Parental Leave">
+          <span class="option-text">Parental Leave</span>
+        </li>
+        <li class="option" data-value="Unpaid Leave">
+          <span class="option-text">Unpaid Leave</span>
+        </li>
+      </ul>
+    </div>
+    <label for="date">Selected dates</label>
+    <div class="date-container" id="date-container">
+      <!-- Dates will be added here dynamically -->
+    </div>
+    <button class="add-date" id="add-date-button">+ Add Date</button>
+  </div>
+  <div class="footer">
+   <button id="send" class="send-button disabled">
+      <span>Send Email</span>
+      <div class="icon"></div>
+    </button>
+  </div>
+  <script src="flatpickr/flatpickr.min.js"></script>
+  <script src="dropdown.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
+<style>
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected:hover {
+    background: #BBF146;
+    border-color: #BBF146;
+    color: #000; /* Adjust text color if needed */
+}
+</style>
