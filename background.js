@@ -28,9 +28,11 @@ async function sendEmail(authToken, emailContent) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        raw: encodedEmail
+        raw: encodedEmail,
+        sendAsMe: true  // This ensures the email appears in the "Sent" folder
       })
     });
+
     if (response.ok) {
       console.log('Email sent successfully!');
       return { success: true };

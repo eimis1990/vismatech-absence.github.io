@@ -325,8 +325,24 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const subject = sBtn_text.innerText;
     const dateDivs = dateContainer.querySelectorAll('div');
+
+    // Determine the correct subject title
+    let subjectTitle;
+    switch (sBtn_text.innerText) {
+      case 'Vacation':
+        subjectTitle = 'Atostogos';
+        break;
+      case 'Parental Leave':
+        subjectTitle = 'Tevadienis';
+        break;
+      case 'Unpaid Leave':
+        subjectTitle = 'Neapmokamos atostogos';
+        break;
+      default:
+        subjectTitle = 'Atostogos'; // Default to "Atostogos" if anything unexpected occurs
+        break;
+    }
 
     if (dateDivs.length > 0 && !sendButton.classList.contains('disabled')) {
       // Start the sending process
@@ -338,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         Array.from(dateDivs).forEach((div) => {
           const emailText = div.dataset.emailText;
-          const emailContent = `To: ${to}\r\nSubject: ${subject}\r\n\r\n${emailText}`;
+          const emailContent = `To: ${to}\r\nSubject: ${subjectTitle}\r\n\r\n${emailText}`;
 
           console.log('Email content:', emailContent);
 
