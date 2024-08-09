@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "VismaTech Absence",
-  "version": "1.0",
+  "version": "1.0.1",
   "description": "A simple extension to send email/emails to your vacation bot",
   "permissions": [
     "identity",
