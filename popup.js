@@ -6,6 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const sBtn_text = document.querySelector(".sBtn-text");
   const to = "vacations.lt@visma.com";
 
+  // Display the extension version
+  const versionText = document.getElementById('version-number');
+  const manifestData = chrome.runtime.getManifest();
+  versionText.innerText = `   v.${manifestData.version}`;
+
   let tempSelectedDates = [];
   let confirmedDates = [];
   let isAuthorized = false; // Variable to track authorization status
