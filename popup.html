@@ -13,6 +13,13 @@
     <img src="images/logo.svg" alt="Visma Logo">
     <p>Quick and easy absence registration. <span id="version-number" class="version-text"></span></p>
   </div>
+
+  <!-- Unauthorized Message -->
+  <div id="unauthorized-message" class="unauthorized-message hidden">
+    <p>You are not authorized to use this extension :)P </p>
+  </div>
+
+  <!-- Content Section -->
   <div class="content">
     <label for="subject">Subject</label>
     <div class="select-menu">
@@ -44,18 +51,47 @@
       <div class="icon"></div>
     </button>
   </div>
+
   <script src="flatpickr/flatpickr.min.js"></script>
   <script src="dropdown.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
+
 <style>
-.flatpickr-day.selected,
-.flatpickr-day.startRange,
-.flatpickr-day.endRange,
-.flatpickr-day.selected:hover {
+  .flatpickr-day.selected,
+  .flatpickr-day.startRange,
+  .flatpickr-day.endRange,
+  .flatpickr-day.selected:hover {
     background: #BBF146;
     border-color: #BBF146;
     color: #000; /* Adjust text color if needed */
-}
+  }
+
+  /* Unauthorized message styling */
+  .unauthorized-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .content, .footer {
+    display: block;
+  }
+
+  .unauthorized .content, .unauthorized .footer {
+    display: none;
+  }
+
+  .unauthorized #unauthorized-message {
+    display: flex;
+  }
 </style>
