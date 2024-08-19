@@ -153,6 +153,15 @@ body::-webkit-scrollbar {
     .navbar .logo img {
         height: 30px; /* Smaller logo for smaller screens */
     }
+
+    .navbar .nav-links a {
+        font-size: 14px; /* Smaller font size for mobile */
+        padding: 8px 12px; /* Adjust padding for smaller screens */
+    }
+
+    .main-section .image-content img {
+        max-width: 100%; /* Ensure image does not exceed container width */
+    }
 }
 
 @media (min-width: 768px) {
