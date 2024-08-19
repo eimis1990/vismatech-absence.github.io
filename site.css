@@ -24,18 +24,18 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 80%; /* Content width */
+    width: 80%;
     margin: 0 auto; /* Center the content within the navbar */
 }
 
 .navbar .logo {
-    margin-left: 1%; /* Left margin for the logo */
+    margin-left: 10%; /* Left margin for the logo */
 }
 
 .navbar .nav-links {
     display: flex;
     gap: 20px;
-    margin-right: 1%; /* Right margin for the nav links */
+    margin-right: 10%; /* Right margin for the nav links */
 }
 
 .navbar .nav-links a {
@@ -49,55 +49,58 @@ body {
 
 .navbar .nav-links a:hover {
     background-color: #f0f0f0;
-    color: #16181C;
+    color: #16181C; /* Change the text color on hover */
 }
 
 .header {
     text-align: center;
     margin: 50px 0;
+    padding: 0 20px; /* Added padding for better mobile view */
 }
 
 .header h1 {
-    font-size: 56px;
+    font-size: 48px;
     color: #000000;
     margin-bottom: -20px;
 }
 
 .header p {
-    font-size: 24px;
+    font-size: 20px;
     color: #000000;
 }
 
 .main-section {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start; /* Align text with the top of the image */
-    padding: 50px;
-    background-color: #BBF146;
+    flex-direction: column; /* Change to column on mobile */
+    align-items: center; /* Center content on mobile */
+    padding: 30px; /* Adjust padding for mobile */
+    background-color: #BBF146; /* Background color */
     color: #16181C;
     border-radius: 20px;
-    margin: 0 100px;
+    margin: 0 10px 30px 10px; /* Added bottom margin */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .main-section .text-content {
-    max-width: 50%;
+    max-width: 90%; /* Adjust width for mobile */
+    text-align: center; /* Center text on mobile */
+    margin-bottom: 20px; /* Add space between text and image */
 }
 
 .main-section .text-content h2 {
-    font-size: 56px;
+    font-size: 36px; /* Adjust font size for mobile */
     margin-bottom: 20px;
 }
 
 .main-section .text-content p {
-    font-size: 18px;
-    margin-bottom: 30px;
+    font-size: 16px; /* Adjust font size for mobile */
+    margin-bottom: 20px;
     line-height: 1.5;
 }
 
 .main-section .text-content a {
     display: inline-block;
-    padding: 15px 30px;
+    padding: 10px 20px; /* Adjust padding for mobile */
     background-color: #000000;
     color: #ffffff;
     font-weight: bold;
@@ -112,7 +115,7 @@ body {
 }
 
 .main-section .image-content {
-    max-width: 40%;
+    max-width: 80%; /* Adjust width for mobile */
 }
 
 .main-section .image-content img {
@@ -121,8 +124,8 @@ body {
 }
 
 .content {
-    padding: 50px;
-    max-width: 800px;
+    padding: 30px 20px; /* Adjust padding for mobile */
+    max-width: 90%; /* Adjust width for mobile */
     margin: 50px auto;
     background-color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -142,4 +145,44 @@ p {
 body::-webkit-scrollbar {
     width: 0px; /* Remove scrollbar width */
     background: transparent; /* Optional: Transparent scrollbar background */
+}
+
+/* Responsive Styles */
+@media (max-width: 800px) {
+    /* Styles for screens smaller than 800px */
+    .navbar .logo img {
+        height: 30px; /* Smaller logo for smaller screens */
+    }
+}
+
+@media (min-width: 768px) {
+    /* Styles for tablets and larger screens */
+    .header h1 {
+        font-size: 56px;
+    }
+
+    .header p {
+        font-size: 24px;
+    }
+
+    .main-section {
+        flex-direction: row;
+        align-items: flex-start;
+        margin: 0 100px 50px 100px; /* Adjusted margin with bottom margin */
+        padding: 50px;
+    }
+
+    .main-section .text-content {
+        max-width: 50%;
+        text-align: left;
+    }
+
+    .main-section .image-content {
+        max-width: 40%;
+    }
+
+    .content {
+        padding: 50px;
+        max-width: 800px;
+    }
 }
