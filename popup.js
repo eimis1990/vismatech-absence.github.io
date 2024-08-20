@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendButton = document.getElementById('send');
   const content = document.querySelector('.content');
   const sBtn_text = document.querySelector(".sBtn-text");
+  const options = document.querySelectorAll(".option");
+  const unauthorizedMessage = document.getElementById('unauthorized-message');
   const to = "vacations.lt@visma.com";
 
   // Display the extension version
@@ -13,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let tempSelectedDates = [];
   let confirmedDates = [];
-  let isAuthorized = false; // Variable to track authorization status
+  let isAuthorized = true;
 
   // Function to disable the Send button
   function disableSendButton() {
@@ -21,24 +23,32 @@ document.addEventListener('DOMContentLoaded', () => {
     sendButton.disabled = true;
   }
 
+  // Function to show unauthorized message
+  function showUnauthorizedMessage() {
+    document.body.classList.add('unauthorized');
+  }
+
   // Fetch the user's email and check authorization
-  chrome.identity.getProfileUserInfo({accountStatus: 'ANY'}, function(userInfo) {
+  chrome.identity.getProfileUserInfo({ accountStatus: 'ANY' }, function (userInfo) {
     const email = userInfo.email;
     const domain = email.split('@')[1]; // Get the domain part of the email
 
     if (domain !== 'visma.com') {
-      alert('You are not authorized to use this extension.');
-      disableSendButton(); // Disable the Send button if not authorized
+      isAuthorized = false;
+      showUnauthorizedMessage();
     } else {
       console.log('User is authorized');
-      isAuthorized = true; // Set authorization flag to true
+      isAuthorized = true;
     }
   });
 
   // Retrieve and set saved subject from localStorage
+  const defaultSubject = 'Atostogos';
   const savedSubject = localStorage.getItem('selectedSubject');
   if (savedSubject) {
     sBtn_text.innerText = savedSubject;
+  } else {
+    sBtn_text.innerText = defaultSubject;
   }
 
   // Retrieve saved dates from localStorage
@@ -47,71 +57,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Expand the date ranges to include all dates between start and end
   savedDates.forEach(range => {
+    addDateToContainer(range.start, range.end);
     let currentDate = new Date(range.start);
     const endDate = new Date(range.end);
-    
+
     while (currentDate <= endDate) {
       fullDateRange.push(new Date(currentDate));
       currentDate.setDate(currentDate.getDate() + 1);
     }
-    addDateToContainer(range.start, range.end);
   });
 
   const fp = flatpickr("#add-date-button", {
-    mode: "multiple",
+    mode: "range", // Default mode
     minDate: "today",
     dateFormat: "Y-m-d",
     defaultDate: fullDateRange,
-    onChange: function(selectedDates) {
-      tempSelectedDates = selectedDates;
-      updateDoneButtonState();
+    locale: {
+      firstDayOfWeek: 1 // Start the week on Monday
     },
-    onReady: function(selectedDates, dateStr, instance) {
+    onChange: function (selectedDates) {
+      tempSelectedDates = selectedDates;
+
+      // Only handle the selected dates when both dates in a range are selected
+      if (fp.config.mode === "single" || (fp.config.mode === "range" && tempSelectedDates.length === 2)) {
+        handleSelectedDate();
+        // Clear temporary dates after handling
+        tempSelectedDates = [];
+      }
+    },
+    onReady: function (selectedDates, dateStr, instance) {
       const calendarContainer = instance.calendarContainer;
 
-      // Done Button
-      const doneButton = document.createElement('button');
-      doneButton.id = 'calendar-done-button';
-      doneButton.textContent = 'Done';
-      doneButton.style.width = '120px';
-      doneButton.style.height = '40px';
-      doneButton.style.backgroundColor = '#16181C';
-      doneButton.style.color = '#FFFFFF';
-      doneButton.style.border = 'none';
-      doneButton.style.borderRadius = '6px';
-      doneButton.style.marginLeft = '10px';
-      doneButton.style.marginTop = '10px';
-      doneButton.style.marginBottom = '10px';
-      doneButton.addEventListener('click', () => {
-        handleDoneButton();
-        instance.close();
-      });
-
-      // Cancel Button
-      const cancelButton = document.createElement('button');
-      cancelButton.textContent = 'Cancel';
-      cancelButton.style.width = '120px';
-      cancelButton.style.height = '40px';
-      cancelButton.style.backgroundColor = '#FFFFFF';
-      cancelButton.style.color = '#16181C';
-      cancelButton.style.border = '1px solid #16181C';
-      cancelButton.style.borderRadius = '6px';
-      cancelButton.style.marginTop = '10px';
-      cancelButton.style.marginBottom = '10px';
-      cancelButton.addEventListener('click', () => {
-        tempSelectedDates = [];
-        instance.close();
-      });
-
-      // Append buttons
-      calendarContainer.appendChild(cancelButton);
-      calendarContainer.appendChild(doneButton);
-
-      // Initial state of Done button
-      updateDoneButtonState();
-
       // Custom positioning to center the calendar
-      instance.positionCalendar = function() {
+      instance.positionCalendar = function () {
         const rect = calendarContainer.getBoundingClientRect();
         const popupRect = document.body.getBoundingClientRect();
 
@@ -126,26 +104,61 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       // Position the calendar when it opens
-      instance.config.onOpen.push(function() {
+      instance.config.onOpen.push(function () {
         setTimeout(instance.positionCalendar, 0);
         overlay.style.display = 'block';
       });
 
       // Handle calendar closing
-      instance.config.onClose.push(function() {
+      instance.config.onClose.push(function () {
         overlay.style.display = 'none';
       });
 
       // Reposition the calendar when the window is resized
       window.addEventListener('resize', instance.positionCalendar);
     },
-    onOpen: function(selectedDates, dateStr, instance) {
+    onOpen: function (selectedDates, dateStr, instance) {
       tempSelectedDates = [...confirmedDates];
       instance.setDate(tempSelectedDates, false);
-      updateDoneButtonState();
     },
-    clickOpens: false  // Prevent the calendar from opening on input click
+    clickOpens: true
   });
+
+  // Function to update the Flatpickr mode dynamically
+  function updateCalendarMode() {
+    const subjectText = sBtn_text.innerText;
+
+    if (subjectText === 'Parental Leave') {
+      fp.set('mode', 'single');  // Single day selection for Parental Leave
+      // Clear selected dates if switching to "Parental Leave"
+      clearSelectedDates();
+    } else {
+      fp.set('mode', 'range');  // Range selection for other subjects
+    }
+
+    tempSelectedDates = [];
+    confirmedDates = [];
+    fp.clear();  // Clear any previously selected dates
+  }
+
+  // Function to clear selected dates
+  function clearSelectedDates() {
+    dateContainer.innerHTML = '';
+    localStorage.removeItem('selectedDates');
+    updateSendButtonState();
+  }
+
+  // Update the calendar mode when the subject changes
+  options.forEach(option => {
+    option.addEventListener("click", () => {
+      sBtn_text.innerText = option.dataset.value;
+      localStorage.setItem('selectedSubject', option.dataset.value);
+      updateCalendarMode();
+    });
+  });
+
+  // Initial calendar mode setup based on current subject
+  updateCalendarMode();
 
   // Create and manage overlay
   const overlay = document.createElement('div');
@@ -168,51 +181,24 @@ document.addEventListener('DOMContentLoaded', () => {
     fp.open();
   });
 
-  function updateDoneButtonState() {
-    const doneButton = document.getElementById('calendar-done-button');
-    if (!doneButton) return; // Exit if button doesn't exist yet
-
-    const hasNewDates = tempSelectedDates.some(date => 
-      !confirmedDates.some(confirmedDate => 
-        confirmedDate.getTime() === date.getTime()
-      )
-    );
-    doneButton.disabled = !hasNewDates;
-    doneButton.style.opacity = hasNewDates ? '1' : '0.5';
-    doneButton.style.cursor = hasNewDates ? 'pointer' : 'not-allowed';
-  }
-
-  function handleDoneButton() {
+  function handleSelectedDate() {
+    if (tempSelectedDates.length === 0) return;
     const existingDates = JSON.parse(localStorage.getItem('selectedDates')) || [];
     tempSelectedDates.sort((a, b) => a - b);
-    let ranges = [];
     let startDate = new Date(tempSelectedDates[0]);
-    let endDate = new Date(tempSelectedDates[0]);
+    let endDate = new Date(tempSelectedDates[tempSelectedDates.length - 1]);
 
-    for (let i = 1; i < tempSelectedDates.length; i++) {
-      let currentDate = new Date(tempSelectedDates[i]);
-      let previousDate = new Date(tempSelectedDates[i - 1]);
-      let oneDay = 24 * 60 * 60 * 1000;
+    // Format dates to YYYY-MM-DD to avoid timezone issues when saving/retrieving
+    const formattedStart = formatDateToISOStringWithoutTimeZone(startDate);
+    const formattedEnd = formatDateToISOStringWithoutTimeZone(endDate);
 
-      if ((currentDate - previousDate) === oneDay) {
-        endDate = currentDate;
-      } else {
-        ranges.push({ start: startDate, end: endDate });
-        startDate = currentDate;
-        endDate = currentDate;
-      }
+    if (!existingDates.some(existing =>
+      existing.start === formattedStart &&
+      existing.end === formattedEnd)) {
+
+      addDateToContainer(formattedStart, formattedEnd);
+      existingDates.push({ start: formattedStart, end: formattedEnd });
     }
-    ranges.push({ start: startDate, end: endDate });
-
-    ranges.forEach(range => {
-      if (!existingDates.some(existing => 
-        existing.start === range.start.toISOString() && 
-        existing.end === range.end.toISOString())) {
-
-        addDateToContainer(range.start.toISOString(), range.end.toISOString());
-        existingDates.push({ start: range.start.toISOString(), end: range.end.toISOString() });
-      }
-    });
 
     localStorage.setItem('selectedDates', JSON.stringify(existingDates));
     updateSendButtonState();
@@ -224,22 +210,28 @@ document.addEventListener('DOMContentLoaded', () => {
   updateSendButtonState();
 
   function addDateToContainer(start, end) {
-    let dateText = `${formatDateWithDots(new Date(start))} - ${formatDateWithDots(new Date(end))}`;
+    // Create Date objects, ensuring they're interpreted in the local timezone
+    let startDate = new Date(start + 'T00:00:00');
+    let endDate = new Date(end + 'T00:00:00');
+
+    let dateText = startDate.getTime() === endDate.getTime() ?
+      `${formatDateWithDots(startDate)}` :
+      `${formatDateWithDots(startDate)} - ${formatDateWithDots(endDate)}`;
+
     let emailText;
 
     switch (sBtn_text.innerText) {
       case 'Parental Leave':
-        emailText = `Prasau suteikti man mamadieni/tevadieni ${formatDateToISOStringWithoutTimeZone(new Date(start))}`;
+        emailText = `Prasau suteikti man mamadieni/tevadieni ${formatDateToISOStringWithoutTimeZone(startDate)}`;
         break;
       case 'Unpaid Leave':
-        emailText = `Prasau suteikti man neapmokamas atostogas nuo ${formatDateToISOStringWithoutTimeZone(new Date(start))} iki ${formatDateToISOStringWithoutTimeZone(new Date(end))} imtinai`;
+        emailText = `Prasau suteikti man neapmokamas atostogas nuo ${formatDateToISOStringWithoutTimeZone(startDate)} iki ${formatDateToISOStringWithoutTimeZone(endDate)} imtinai`;
         break;
       case 'Vacation':
       default:
-        emailText = `Prasau suteikti man kasmetines atostogas nuo ${formatDateToISOStringWithoutTimeZone(new Date(start))} iki ${formatDateToISOStringWithoutTimeZone(new Date(end))} imtinai`;
+        emailText = `Prasau suteikti man kasmetines atostogas nuo ${formatDateToISOStringWithoutTimeZone(startDate)} iki ${formatDateToISOStringWithoutTimeZone(endDate)} imtinai`;
         break;
     }
-
     const dateDiv = document.createElement('div');
     dateDiv.classList.add('adding');
     dateDiv.style.transform = 'translateY(-20px)';
@@ -268,15 +260,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function formatDateToISOStringWithoutTimeZone(date) {
-    const offset = date.getTimezoneOffset();
-    const adjustedDate = new Date(date.getTime() - offset * 60 * 1000);
-    return adjustedDate.toISOString().split('T')[0];
+    return date.toLocaleString('sv-SE', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\D/g, '-');
   }
 
   function formatDateWithDots(date) {
-    const offset = date.getTimezoneOffset();
-    const adjustedDate = new Date(date.getTime() - offset * 60 * 1000);
-    return adjustedDate.toISOString().split('T')[0].replace(/-/g, '.');
+    return date.toLocaleString('sv-SE', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\D/g, '.');
   }
 
   function removeDateFromStorage(start, end) {
@@ -309,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
       sendButton.disabled = false;
     } else {
       sendButton.innerHTML = "<span>Send Email</span>";
-      disableSendButton(); // Keep the Send button disabled
+      disableSendButton();
     }
   }
 
@@ -326,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
   sendButton.addEventListener('click', () => {
 
     if (!isAuthorized) {
-      alert('You are not authorized to use this extension.');
+      alert('You are not authorized to use this extension');
       return;
     }
 
@@ -345,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
         subjectTitle = 'Neapmokamos atostogos';
         break;
       default:
-        subjectTitle = 'Atostogos'; // Default to "Atostogos" if anything unexpected occurs
+        subjectTitle = 'Atostogos';
         break;
     }
 
