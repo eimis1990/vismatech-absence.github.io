@@ -75,24 +75,28 @@ body {
 .main-section {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 50px;
+    align-items: center; /* Center the content vertically */
+    padding: 0 50px; /* Remove top and bottom padding */
     background-color: #BBF146; /* Background color */
     color: #16181C;
     border-radius: 20px;
-    margin: 0 auto 50px auto; /* Centered with auto margins and added bottom margin */
+    margin: 40px auto 50px auto; /* Add margin for spacing above */
     width: 80%;
     max-width: 1200px; /* Align with navbar's content-wrapper */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative; /* Relative positioning for dynamic adjustments */
+    min-height: calc(100% + 160px); /* Ensure it's 160px taller than the content */
 }
 
 .main-section .text-content {
     max-width: 50%;
+    text-align: left;
 }
 
 .main-section .text-content h2 {
     font-size: 56px;
     margin-bottom: 20px;
+    margin-top: 0px;
 }
 
 .main-section .text-content p {
@@ -110,7 +114,6 @@ body {
     font-size: 20px; /* Larger font size for the button */
     text-decoration: none;
     border-radius: 12px;
-    margin-top: 30px; /* Increased top margin for more space above the button */
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -122,6 +125,8 @@ body {
 .main-section .image-content {
     max-width: 40%;
     margin-left: 60px; /* Added space between text and image */
+    position: relative; /* Allow the image to be positioned relatively */
+    bottom: -80px; /* Push the image down so it extends out of the bottom */
 }
 
 .main-section .image-content img {
@@ -180,6 +185,7 @@ body::-webkit-scrollbar {
     .main-section .image-content {
         max-width: 100%;
         margin-left: 0; /* Remove left margin on mobile */
+        margin-top: -80px;
     }
 
     .main-section .text-content a {
