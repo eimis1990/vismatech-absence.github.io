@@ -269,6 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
     dateDiv.dataset.emailText = emailText;
     dateDiv.dataset.startDate = start;
     dateDiv.dataset.endDate = end;
+    dateDiv.dataset.dates = JSON.stringify({ start, end });
 
     dateContainer.appendChild(dateDiv);
     setTimeout(() => {
@@ -375,52 +376,104 @@ document.addEventListener("DOMContentLoaded", () => {
       // Start the sending process
       sendButton.classList.add("sending");
       sendButton.disabled = true;
-      sendButton.innerHTML = "<span>Sending...</span>"; // Change text to "Sending..."
+      sendButton.innerHTML = "<span>Sending...</span>";
 
-      // Simulate sending process
-      setTimeout(() => {
-        Array.from(dateDivs).forEach((div) => {
+      // Get existing email history
+      chrome.storage.local.get(['emailHistory'], function(result) {
+        const emailHistory = result.emailHistory || [];
+        const currentTime = new Date().toISOString();
+        
+        // Process each date range
+        const promises = Array.from(dateDivs).map((div) => {
           const emailText = div.dataset.emailText;
+          const dates = JSON.parse(div.dataset.dates);
           const emailContent = `To: ${to}\r\nSubject: ${subjectTitle}\r\n\r\n${emailText}`;
 
-          console.log("Email content:", emailContent);
+          // Create history entry
+          const historyEntry = {
+            subject: subjectTitle,
+            startDate: dates.start,
+            endDate: dates.end,
+            sentDate: currentTime,
+            id: Date.now() + Math.random().toString(36).substr(2, 9)
+          };
 
-          chrome.runtime.sendMessage(
-            {
-              action: "sendEmail",
-              email: emailContent,
-            },
-            (response) => {
-              if (response.success) {
-                console.log("Email sent!");
-              } else {
-                console.error("Failed to send email: " + response.error);
+          // Add to history
+          emailHistory.push(historyEntry);
+
+          return new Promise((resolve, reject) => {
+            chrome.runtime.sendMessage(
+              {
+                action: "sendEmail",
+                email: emailContent,
+              },
+              (response) => {
+                if (response.success) {
+                  resolve();
+                } else {
+                  reject(response.error);
+                }
               }
-            }
-          );
+            );
+          });
         });
 
-        // Change button text to "Sent" after sending
-        setTimeout(() => {
-          sendButton.classList.remove("sending");
-          sendButton.classList.add("sent");
-          sendButton.innerHTML = "<span>Sent</span>";
+        // Save updated history and handle email sending
+        Promise.all(promises)
+          .then(() => {
+            chrome.storage.local.set({ emailHistory: emailHistory }, function() {
+              console.log('Email history updated');
+              
+              // Trigger confetti effect
+              const duration = 3000;
+              const animationEnd = Date.now() + duration;
+              const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
-          // Clear the date container and update button state
-          dateContainer.innerHTML = "";
-          updateSendButtonState();
+              function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+              }
 
-          // Remove dates from storage
-          localStorage.removeItem("selectedDates");
+              const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
 
-          // Optionally, revert the button after a delay
-          setTimeout(() => {
-            sendButton.classList.remove("sent");
-            sendButton.disabled = false;
+                if (timeLeft <= 0) {
+                  clearInterval(interval);
+                  // Clear the form after confetti
+                  dateContainer.innerHTML = '';
+                  clearSelectedDates();
+                  updateSendButtonState();
+                  return;
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+                
+                // Create confetti from both sides
+                confetti({
+                  ...defaults,
+                  particleCount,
+                  origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+                });
+                confetti({
+                  ...defaults,
+                  particleCount,
+                  origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+                });
+              }, 250);
+
+              // Reset button state
+              sendButton.classList.remove("sending");
+              sendButton.innerHTML = "<span>Send Email</span>";
+              sendButton.disabled = false;
+            });
+          })
+          .catch((error) => {
+            console.error("Failed to send emails:", error);
+            sendButton.classList.remove("sending");
             sendButton.innerHTML = "<span>Send Email</span>";
-          }, 800); // Delay before reverting to "Send Email"
-        }, 400); // Delay before showing "Sent"
-      }, 1000); // Simulate a 1-second sending process
+            sendButton.disabled = false;
+            alert("Failed to send some emails. Please try again.");
+          });
+      });
     } else {
       alert("No dates selected!");
     }

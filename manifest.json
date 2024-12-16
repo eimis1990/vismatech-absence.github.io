@@ -3,7 +3,7 @@
   "name": "VismaTech Absence",
   "version": "1.0.3",
   "description": "A simple extension to send email/emails to your vacation bot",
-  "permissions": ["identity", "identity.email"],
+  "permissions": ["identity", "identity.email", "storage"],
   "background": {
     "service_worker": "background.js"
   },
@@ -19,7 +19,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["flatpickr/*"],
+      "resources": ["flatpickr/*", "lib/*"],
       "matches": ["<all_urls>"]
     }
   ],
