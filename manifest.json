@@ -3,10 +3,7 @@
   "name": "VismaTech Absence",
   "version": "1.0.3",
   "description": "A simple extension to send email/emails to your vacation bot",
-  "permissions": [
-    "identity",
-    "identity.email"
-  ],
+  "permissions": ["identity", "identity.email"],
   "background": {
     "service_worker": "background.js"
   },
@@ -16,13 +13,16 @@
   "oauth2": {
     "client_id": "855141560534-4kdo3uclrricq3ee029rn93fspjcko3n.apps.googleusercontent.com",
     "scopes": [
-      "https://www.googleapis.com/auth/gmail.send"
+      "https://www.googleapis.com/auth/gmail.send",
+      "https://www.googleapis.com/auth/userinfo.email"
     ]
   },
-  "web_accessible_resources": [{
-    "resources": ["flatpickr/*"],
-    "matches": ["<all_urls>"]
-  }],
+  "web_accessible_resources": [
+    {
+      "resources": ["flatpickr/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
