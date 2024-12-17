@@ -7,8 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const sBtn_text = document.querySelector(".sBtn-text");
   const options = document.querySelectorAll(".option");
   const unauthorizedMessage = document.getElementById("unauthorized-message");
-  // const to = "vacations.lt@visma.com";
-  const to = "e.kudarauskas@gmail.com";
+  const to = "vacations.lt@visma.com";
 
   // Display the extension version
   const versionText = document.getElementById("version-number");
@@ -25,27 +24,30 @@ document.addEventListener("DOMContentLoaded", () => {
     sendButton.disabled = true;
   }
 
-  // Function to show unauthorized message
+  // Function to show unauthorized message and disable history button
   function showUnauthorizedMessage() {
     document.body.classList.add("unauthorized");
+    historyButton.classList.add("disabled");
+    historyButton.disabled = true;
+    document.getElementById("unauthorized-message").classList.remove("hidden");
   }
 
   // Fetch the user's email and check authorization
-  // chrome.identity.getProfileUserInfo(
-  //   { accountStatus: "ANY" },
-  //   function (userInfo) {
-  //     const email = userInfo.email;
-  //     const domain = email.split("@")[1]; // Get the domain part of the email
+  chrome.identity.getProfileUserInfo(
+    { accountStatus: "ANY" },
+    function (userInfo) {
+      const email = userInfo.email;
+      const domain = email.split("@")[1]; // Get the domain part of the email
 
-  //     if (domain !== "visma.com") {
-  //       isAuthorized = false;
-  //       showUnauthorizedMessage();
-  //     } else {
-  //       console.log("User is authorized");
-  //       isAuthorized = true;
-  //     }
-  //   }
-  // );
+      if (domain !== "visma.com") {
+        isAuthorized = false;
+        showUnauthorizedMessage();
+      } else {
+        console.log("User is authorized");
+        isAuthorized = true;
+      }
+    }
+  );
 
   // Retrieve and set saved subject from localStorage
   const defaultSubject = "Vacation";
@@ -379,10 +381,10 @@ document.addEventListener("DOMContentLoaded", () => {
       sendButton.innerHTML = "<span>Sending...</span>";
 
       // Get existing email history
-      chrome.storage.local.get(['emailHistory'], function(result) {
+      chrome.storage.local.get(["emailHistory"], function (result) {
         const emailHistory = result.emailHistory || [];
         const currentTime = new Date().toISOString();
-        
+
         // Process each date range
         const promises = Array.from(dateDivs).map((div) => {
           const emailText = div.dataset.emailText;
@@ -395,7 +397,7 @@ document.addEventListener("DOMContentLoaded", () => {
             startDate: dates.start,
             endDate: dates.end,
             sentDate: currentTime,
-            id: Date.now() + Math.random().toString(36).substr(2, 9)
+            id: Date.now() + Math.random().toString(36).substr(2, 9),
           };
 
           // Add to history
@@ -421,50 +423,64 @@ document.addEventListener("DOMContentLoaded", () => {
         // Save updated history and handle email sending
         Promise.all(promises)
           .then(() => {
-            chrome.storage.local.set({ emailHistory: emailHistory }, function() {
-              console.log('Email history updated');
-              
-              // Trigger confetti effect
-              const duration = 3000;
-              const animationEnd = Date.now() + duration;
-              const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+            chrome.storage.local.set(
+              { emailHistory: emailHistory },
+              function () {
+                console.log("Email history updated");
 
-              function randomInRange(min, max) {
-                return Math.random() * (max - min) + min;
-              }
+                // Trigger confetti effect
+                const duration = 3000;
+                const animationEnd = Date.now() + duration;
+                const defaults = {
+                  startVelocity: 30,
+                  spread: 360,
+                  ticks: 60,
+                  zIndex: 0,
+                };
 
-              const interval = setInterval(function() {
-                const timeLeft = animationEnd - Date.now();
-
-                if (timeLeft <= 0) {
-                  clearInterval(interval);
-                  // Clear the form after confetti
-                  dateContainer.innerHTML = '';
-                  clearSelectedDates();
-                  updateSendButtonState();
-                  return;
+                function randomInRange(min, max) {
+                  return Math.random() * (max - min) + min;
                 }
 
-                const particleCount = 50 * (timeLeft / duration);
-                
-                // Create confetti from both sides
-                confetti({
-                  ...defaults,
-                  particleCount,
-                  origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-                });
-                confetti({
-                  ...defaults,
-                  particleCount,
-                  origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-                });
-              }, 250);
+                const interval = setInterval(function () {
+                  const timeLeft = animationEnd - Date.now();
 
-              // Reset button state
-              sendButton.classList.remove("sending");
-              sendButton.innerHTML = "<span>Send Email</span>";
-              sendButton.disabled = false;
-            });
+                  if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    // Clear the form after confetti
+                    dateContainer.innerHTML = "";
+                    clearSelectedDates();
+                    updateSendButtonState();
+                    return;
+                  }
+
+                  const particleCount = 50 * (timeLeft / duration);
+
+                  // Create confetti from both sides
+                  confetti({
+                    ...defaults,
+                    particleCount,
+                    origin: {
+                      x: randomInRange(0.1, 0.3),
+                      y: Math.random() - 0.2,
+                    },
+                  });
+                  confetti({
+                    ...defaults,
+                    particleCount,
+                    origin: {
+                      x: randomInRange(0.7, 0.9),
+                      y: Math.random() - 0.2,
+                    },
+                  });
+                }, 250);
+
+                // Reset button state
+                sendButton.classList.remove("sending");
+                sendButton.innerHTML = "<span>Send Email</span>";
+                sendButton.disabled = false;
+              }
+            );
           })
           .catch((error) => {
             console.error("Failed to send emails:", error);
@@ -481,6 +497,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Add history button click handler
   historyButton.addEventListener("click", () => {
-    window.location.href = 'history.html';
+    window.location.href = "history.html";
   });
 });
