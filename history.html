@@ -1,29 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Absence History</title>
-  <link rel="stylesheet" href="style.css">
-  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600&display=swap" rel="stylesheet">
-</head>
-<body>
-  <div class="history-header">
-    <div class="history-header-content">
+  <head>
+    <meta charset="UTF-8" />
+    <title>History</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="history-header">
       <button id="back-btn" class="back-button">
-        <i class='bx bx-arrow-back'></i>
+        <i class="bx bx-arrow-back"></i>
       </button>
-      <h1>Absence history</h1>
+      <h1>History</h1>
     </div>
-  </div>
-  <div class="history-content">
-    <div id="history-list" class="history-list">
-      <!-- History items will be added here -->
+    <div class="history-content">
+      <div id="history-list" class="history-list">
+        <!-- History items will be added here -->
+      </div>
+      <div id="no-history" class="no-history">
+        <p>No absence records yet.</p>
+      </div>
     </div>
-    <div id="no-history" class="no-history">
-      <p>No absence records yet.</p>
-    </div>
-  </div>
-  <script src="history.js"></script>
-</body>
+    <script src="history.js"></script>
+  </body>
 </html>

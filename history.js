@@ -1,81 +1,164 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const backButton = document.getElementById('back-btn');
-  const historyList = document.getElementById('history-list');
-  const noHistory = document.getElementById('no-history');
+document.addEventListener("DOMContentLoaded", () => {
+  const backButton = document.getElementById("back-btn");
+  const historyList = document.getElementById("history-list");
+  const noHistory = document.getElementById("no-history");
 
   // Back button handler
-  backButton.addEventListener('click', () => {
-    window.location.href = 'popup.html';
+  backButton.addEventListener("click", () => {
+    window.location.href = "popup.html";
   });
 
   // Show empty state
   function showEmptyState() {
-    historyList.innerHTML = '';
-    noHistory.classList.add('visible');
+    historyList.innerHTML = "";
+    noHistory.classList.add("visible");
   }
 
   // Format date for display
   function formatDate(dateString) {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     });
   }
 
-  // Format time for display
-  function formatTime(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  // Calculate days until event
+  function calculateDaysUntil(startDate) {
+    const start = new Date(startDate);
+    const now = new Date("2024-12-17T08:37:36+02:00");
+    const diffTime = start - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }
+
+  // Map absence types to display titles
+  const subjectTitles = {
+    Atostogos: "Vacation",
+    Tevadienis: "Parental Leave",
+    "Neapmokamos atostogos": "Unpaid Leave",
+  };
+
+  // Calculate number of days between dates
+  function calculateDays(startDate, endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    return diffDays;
+  }
+
+  // Sort history items into upcoming and previous
+  function sortHistoryItems(items) {
+    const now = new Date("2024-12-17T08:54:56+02:00");
+    const sorted = items.reduce(
+      (acc, item) => {
+        const startDate = new Date(item.startDate);
+        const endDate = new Date(item.endDate);
+        // Event is upcoming if it ends in the future
+        if (endDate >= now) {
+          acc.upcoming.push(item);
+        } else {
+          acc.previous.push(item);
+        }
+        return acc;
+      },
+      { upcoming: [], previous: [] }
+    );
+
+    sorted.upcoming.sort(
+      (a, b) => new Date(a.startDate) - new Date(b.startDate)
+    );
+    sorted.previous.sort(
+      (a, b) => new Date(b.startDate) - new Date(a.startDate)
+    );
+
+    return sorted;
+  }
+
+  // Get display text for days until event
+  function getDaysUntilText(startDate) {
+    const daysUntil = calculateDaysUntil(startDate);
+    if (daysUntil === 0) return "Now";
+    if (daysUntil === 1) return "Tomorrow";
+    return `In ${daysUntil} days`;
+  }
+
+  // Create history item element
+  function createHistoryItem(item, type) {
+    const historyItem = document.createElement("div");
+    historyItem.className = `history-item ${type}`;
+
+    const displaySubject = subjectTitles[item.subject] || item.subject;
+    const daysContent =
+      type === "upcoming"
+        ? `<div class="history-item-days">${getDaysUntilText(
+            item.startDate
+          )}</div>`
+        : "";
+
+    historyItem.innerHTML = `
+      <div class="history-item-content">
+        <h3 class="history-item-title">${displaySubject}</h3>
+        ${daysContent}
+      </div>
+      <p class="history-item-date">${formatDate(item.startDate)} - ${formatDate(
+      item.endDate
+    )}</p>
+    `;
+
+    return historyItem;
   }
 
   // Load and display email history
   try {
     if (!chrome.storage || !chrome.storage.local) {
-      console.error('Chrome storage is not available');
+      console.error("Chrome storage is not available");
       showEmptyState();
       return;
     }
 
-    chrome.storage.local.get(['emailHistory'], function(result) {
+    chrome.storage.local.get(["emailHistory"], function (result) {
       const emailHistory = result.emailHistory || [];
-      
+
       if (!emailHistory || emailHistory.length === 0) {
         showEmptyState();
         return;
       }
 
-      noHistory.classList.remove('visible');
+      noHistory.classList.remove("visible");
 
-      // Sort history by sent date, newest first
-      emailHistory.sort((a, b) => new Date(b.sentDate) - new Date(a.sentDate));
+      // Sort history into upcoming and previous
+      const { upcoming, previous } = sortHistoryItems(emailHistory);
 
-      // Create history items
-      emailHistory.forEach(item => {
-        const historyItem = document.createElement('div');
-        historyItem.className = 'history-item';
-        
-        const dateText = item.startDate === item.endDate
-          ? formatDate(item.startDate)
-          : `${formatDate(item.startDate)} - ${formatDate(item.endDate)}`;
+      // Clear existing content
+      historyList.innerHTML = "";
 
-        historyItem.innerHTML = `
-          <div class="history-item-header">
-            <h3 class="history-item-title">${item.subject}</h3>
-            <p class="history-item-sent">Sent on ${formatDate(item.sentDate)} at ${formatTime(item.sentDate)}</p>
-          </div>
-          <p class="history-item-date">${dateText}</p>
-        `;
+      // Add upcoming section if there are upcoming items
+      if (upcoming.length > 0) {
+        const upcomingSection = document.createElement("div");
+        upcomingSection.className = "history-section";
+        upcomingSection.innerHTML = '<h2 class="section-title">Upcoming</h2>';
+        upcoming.forEach((item) => {
+          upcomingSection.appendChild(createHistoryItem(item, "upcoming"));
+        });
+        historyList.appendChild(upcomingSection);
+      }
 
-        historyList.appendChild(historyItem);
-      });
+      // Add previous section if there are previous items
+      if (previous.length > 0) {
+        const previousSection = document.createElement("div");
+        previousSection.className = "history-section";
+        previousSection.innerHTML = '<h2 class="section-title">Previous</h2>';
+        previous.forEach((item) => {
+          previousSection.appendChild(createHistoryItem(item, "previous"));
+        });
+        historyList.appendChild(previousSection);
+      }
     });
   } catch (error) {
-    console.error('Error loading history:', error);
+    console.error("Error loading history:", error);
     showEmptyState();
   }
 });
