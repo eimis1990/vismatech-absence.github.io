@@ -51,8 +51,12 @@ body {
 }
 
 .navbar .nav-links a:hover {
-    background-color: #f0f0f0;
-    color: #16181C; /* Change the text color on hover */
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar .nav-links a.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
 }
 
 .header {
