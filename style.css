@@ -533,10 +533,10 @@ button.add-date {
 }
 
 .history-item-days {
-  background-color: #000000;
-  color: #ffffff;
+  background-color: #bbf146;
+  color: #000000;
   padding: 4px 12px;
-  border-radius: 9999px;
+  border-radius: 5px;
   font-size: 12px;
   font-weight: 500;
   margin-top: 4px;
