@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Calculate days until event
   function calculateDaysUntil(startDate) {
     const start = new Date(startDate);
-    const now = new Date("2024-12-17T08:37:36+02:00");
+    const now = new Date();
     const diffTime = start - now;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
@@ -40,18 +40,9 @@ document.addEventListener("DOMContentLoaded", () => {
     "Neapmokamos atostogos": "Unpaid Leave",
   };
 
-  // Calculate number of days between dates
-  function calculateDays(startDate, endDate) {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffTime = Math.abs(end - start);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-    return diffDays;
-  }
-
   // Sort history items into upcoming and previous
   function sortHistoryItems(items) {
-    const now = new Date("2024-12-17T08:54:56+02:00");
+    const now = new Date();
     const sorted = items.reduce(
       (acc, item) => {
         const startDate = new Date(item.startDate);
@@ -111,17 +102,31 @@ document.addEventListener("DOMContentLoaded", () => {
     return historyItem;
   }
 
-  // Load and display email history
-  try {
-    if (!chrome.storage || !chrome.storage.local) {
-      console.error("Chrome storage is not available");
-      showEmptyState();
-      return;
-    }
+  // Update daysUntil dynamically
+  function updateDaysUntil() {
+    const upcomingItems = document.querySelectorAll(".history-item.upcoming");
+    upcomingItems.forEach((item) => {
+      const startDateText = item
+        .querySelector(".history-item-date")
+        .textContent.split(" - ")[0];
+      const startDate = new Date(startDateText);
+      const daysUntilText = item.querySelector(".history-item-days");
+      if (daysUntilText) {
+        const daysUntil = calculateDaysUntil(startDate);
+        daysUntilText.textContent =
+          daysUntil === 0
+            ? "Now"
+            : daysUntil === 1
+            ? "Tomorrow"
+            : `In ${daysUntil} days`;
+      }
+    });
+  }
 
+  // Render history items
+  function renderHistory() {
     chrome.storage.local.get(["emailHistory"], function (result) {
       const emailHistory = result.emailHistory || [];
-
       if (!emailHistory || emailHistory.length === 0) {
         showEmptyState();
         return;
@@ -129,13 +134,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       noHistory.classList.remove("visible");
 
-      // Sort history into upcoming and previous
       const { upcoming, previous } = sortHistoryItems(emailHistory);
 
-      // Clear existing content
       historyList.innerHTML = "";
 
-      // Add upcoming section if there are upcoming items
       if (upcoming.length > 0) {
         const upcomingSection = document.createElement("div");
         upcomingSection.className = "history-section";
@@ -146,7 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
         historyList.appendChild(upcomingSection);
       }
 
-      // Add previous section if there are previous items
       if (previous.length > 0) {
         const previousSection = document.createElement("div");
         previousSection.className = "history-section";
@@ -156,9 +157,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         historyList.appendChild(previousSection);
       }
+
+      updateDaysUntil();
     });
-  } catch (error) {
-    console.error("Error loading history:", error);
-    showEmptyState();
   }
+
+  // Load and render the history on page load
+  renderHistory();
+
+  // Periodically update the daysUntil values every minute
+  setInterval(updateDaysUntil, 60000);
 });

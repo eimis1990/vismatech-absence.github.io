@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const content = document.querySelector(".content");
   const sBtn_text = document.querySelector(".sBtn-text");
   const options = document.querySelectorAll(".option");
-  const unauthorizedMessage = document.getElementById("unauthorized-message");
   const to = "vacations.lt@visma.com";
 
   // Display the extension version
