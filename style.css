@@ -31,6 +31,176 @@ canvas {
   height: 90px;
 }
 
+/* Tabs Container */
+.tabs-container {
+  width: 100%;
+  background: #1a1a1a;
+  padding: 0;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: relative;
+  padding: 0;
+}
+
+.tab-button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #999;
+  font-family: "Raleway", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 16px 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.tab-button i {
+  font-size: 18px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-button:hover {
+  color: #ccc;
+}
+
+.tab-button:hover i {
+  transform: scale(1.1);
+}
+
+.tab-button.active {
+  color: #bbf146;
+}
+
+.tab-button.active i {
+  transform: scale(1.15);
+}
+
+.tab-indicator {
+  position: absolute;
+  bottom: 0;
+  height: 3px;
+  background: #bbf146;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 3px 3px 0 0;
+  width: calc(100% / 3);
+  left: 0;
+}
+
+/* Tab Content */
+.tab-content-wrapper {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  background-color: #f7f6fb;
+}
+
+.tab-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(30px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  box-sizing: border-box;
+}
+
+.tab-content::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-content.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  position: relative;
+}
+
+.tab-content.slide-out-left {
+  transform: translateX(-30px);
+}
+
+.tab-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px 20px;
+  text-align: center;
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-placeholder i {
+  font-size: 64px;
+  color: #bbf146;
+  margin-bottom: 20px;
+  animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.tab-placeholder h2 {
+  font-family: "Raleway", sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: #16181c;
+  margin: 0 0 12px 0;
+}
+
+.tab-placeholder p {
+  font-family: "Raleway", sans-serif;
+  font-size: 14px;
+  color: #71717a;
+  margin: 0;
+  max-width: 280px;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .header-left {
   display: flex;
   flex-direction: column;
@@ -129,11 +299,14 @@ canvas {
 .content {
   flex: 1;
   width: 100%;
-  padding: 20px;
+  padding: 20px 0;
   overflow-y: auto;
+  overflow-x: hidden;
   background-color: #f7f6fb;
   scrollbar-width: none;
   scroll-behavior: smooth;
+  box-sizing: border-box;
+  min-height: 400px;
 }
 
 .content::-webkit-scrollbar {
@@ -395,9 +568,9 @@ button.add-date {
   background: #fff;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
   display: none;
-  z-index: 1;
-  max-height: 240px; /* Control the max height of the dropdown */
-  overflow-y: auto;
+  z-index: 9999;
+  max-height: none; /* Remove max-height to show all options */
+  overflow-y: visible;
   font-weight: 400;
 }
 

@@ -1,4 +1,65 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Tab switching functionality
+  const tabButtons = document.querySelectorAll(".tab-button");
+  const tabContents = document.querySelectorAll(".tab-content");
+  const tabIndicator = document.querySelector(".tab-indicator");
+
+  function switchTab(targetTab, buttonIndex) {
+    // Remove active class from all buttons and contents
+    tabButtons.forEach((btn) => btn.classList.remove("active"));
+    tabContents.forEach((content) => {
+      content.classList.remove("active");
+      content.classList.add("slide-out-left");
+    });
+
+    // Add active class to clicked button
+    tabButtons[buttonIndex].classList.add("active");
+
+    // Move indicator
+    const indicatorWidth = 100 / tabButtons.length;
+    tabIndicator.style.left = `${indicatorWidth * buttonIndex}%`;
+
+    // Show/hide footer based on active tab
+    const footer = document.querySelector(".footer");
+    if (targetTab === "new-absence") {
+      footer.style.display = "block";
+    } else {
+      footer.style.display = "none";
+    }
+
+    // Show target content with animation
+    setTimeout(() => {
+      tabContents.forEach((content) => content.classList.remove("slide-out-left"));
+      const targetContent = document.getElementById(`${targetTab}-tab`);
+      if (targetContent) {
+        targetContent.classList.add("active");
+      }
+    }, 150);
+  }
+
+  tabButtons.forEach((button, index) => {
+    button.addEventListener("click", () => {
+      const targetTab = button.getAttribute("data-tab");
+      switchTab(targetTab, index);
+    });
+  });
+
+  // Initialize indicator position and footer visibility
+  const activeTabIndex = Array.from(tabButtons).findIndex((btn) =>
+    btn.classList.contains("active")
+  );
+  if (activeTabIndex !== -1) {
+    const indicatorWidth = 100 / tabButtons.length;
+    tabIndicator.style.left = `${indicatorWidth * activeTabIndex}%`;
+  }
+
+  // Hide footer initially since we start on Home tab
+  const footer = document.querySelector(".footer");
+  const initialActiveTab = tabButtons[activeTabIndex]?.getAttribute("data-tab");
+  if (initialActiveTab !== "new-absence") {
+    footer.style.display = "none";
+  }
+
   const dateContainer = document.getElementById("date-container");
   const addDateButton = document.getElementById("add-date-button");
   const sendButton = document.getElementById("send");
@@ -494,8 +555,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Add history button click handler
+  // Add history button click handler - switch to history tab
   historyButton.addEventListener("click", () => {
-    window.location.href = "history.html";
+    switchTab("history", 2);
   });
 });

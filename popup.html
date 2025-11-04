@@ -27,36 +27,78 @@
       </div>
     </div>
 
+    <!-- Tab Navigation -->
+    <div class="tabs-container">
+      <div class="tabs">
+        <button class="tab-button active" data-tab="home">
+          <i class="bx bx-home-alt"></i>
+          <span>Home</span>
+        </button>
+        <button class="tab-button" data-tab="new-absence">
+          <i class="bx bx-calendar-plus"></i>
+          <span>Create New</span>
+        </button>
+        <button class="tab-button" data-tab="history">
+          <i class="bx bx-time-five"></i>
+          <span>History</span>
+        </button>
+      </div>
+      <div class="tab-indicator"></div>
+    </div>
+
     <!-- Unauthorized Message -->
     <div id="unauthorized-message" class="unauthorized-message hidden">
       <img src="images/not-auth.png" alt="Not Authorized" class="unauthorized-image" />
     </div>
 
-    <!-- Content Section -->
-    <div class="content">
-      <label for="subject">Subject</label>
-      <div class="select-menu">
-        <div class="select-btn">
-          <span class="sBtn-text">Select your option</span>
-          <i class="bx bx-chevron-down"></i>
+    <!-- Tab Content -->
+    <div class="tab-content-wrapper">
+      <!-- Home Tab -->
+      <div class="tab-content active" id="home-tab">
+        <div class="tab-placeholder">
+          <i class="bx bx-home-smile"></i>
+          <h2>Home</h2>
+          <p>Welcome to your absence management tool</p>
         </div>
-        <ul class="options">
-          <li class="option" data-value="Vacation">
-            <span class="option-text">Vacation</span>
-          </li>
-          <li class="option" data-value="Parental Leave">
-            <span class="option-text">Parental Leave</span>
-          </li>
-          <li class="option" data-value="Unpaid Leave">
-            <span class="option-text">Unpaid Leave</span>
-          </li>
-        </ul>
       </div>
-      <label for="date">Selected dates</label>
-      <div class="date-container" id="date-container">
-        <!-- Dates will be added here dynamically -->
+
+      <!-- New Absence Tab -->
+      <div class="tab-content" id="new-absence-tab">
+        <div class="content">
+          <label for="subject">Subject</label>
+          <div class="select-menu">
+            <div class="select-btn">
+              <span class="sBtn-text">Select your option</span>
+              <i class="bx bx-chevron-down"></i>
+            </div>
+            <ul class="options">
+              <li class="option" data-value="Vacation">
+                <span class="option-text">Vacation</span>
+              </li>
+              <li class="option" data-value="Parental Leave">
+                <span class="option-text">Parental Leave</span>
+              </li>
+              <li class="option" data-value="Unpaid Leave">
+                <span class="option-text">Unpaid Leave</span>
+              </li>
+            </ul>
+          </div>
+          <label for="date">Selected dates</label>
+          <div class="date-container" id="date-container">
+            <!-- Dates will be added here dynamically -->
+          </div>
+          <button class="add-date" id="add-date-button">+ Add Date</button>
+        </div>
       </div>
-      <button class="add-date" id="add-date-button">+ Add Date</button>
+
+      <!-- History Tab -->
+      <div class="tab-content" id="history-tab">
+        <div class="tab-placeholder">
+          <i class="bx bx-history"></i>
+          <h2>History</h2>
+          <p>Your absence history will appear here</p>
+        </div>
+      </div>
     </div>
     <div class="footer">
       <button id="send" class="send-button disabled">
