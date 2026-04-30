@@ -201,6 +201,245 @@ canvas {
   }
 }
 
+/* Home Tab Styles */
+.home-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Upcoming Absence Card */
+.upcoming-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e4e4e7;
+}
+
+.upcoming-card.has-absence {
+  background: linear-gradient(135deg, #f7fee7 0%, #ecfccb 100%);
+  border-color: #bef264;
+}
+
+.upcoming-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f4f4f5;
+}
+
+.upcoming-card.has-absence .upcoming-card-header {
+  border-bottom-color: rgba(190, 242, 100, 0.3);
+}
+
+.upcoming-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.upcoming-countdown {
+  background: #16181c;
+  color: #bbf146;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.upcoming-card-body {
+  padding: 16px;
+}
+
+.upcoming-title {
+  margin: 0 0 6px 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #16181c;
+}
+
+.upcoming-dates {
+  margin: 0;
+  font-size: 13px;
+  color: #71717a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.upcoming-dates i {
+  color: #65a30d;
+}
+
+.upcoming-card-footer {
+  padding: 0 16px 16px;
+}
+
+.upcoming-action-btn {
+  background: #bbf146;
+  border: none;
+  color: #16181c;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-family: "Raleway", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  width: 100%;
+  justify-content: center;
+}
+
+.upcoming-action-btn:hover {
+  background: #a8de2e;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(187, 241, 70, 0.3);
+}
+
+.upcoming-card.has-absence .upcoming-card-footer {
+  display: none;
+}
+
+/* Year Stats Section */
+.year-stats-section {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.stats-title {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #71717a;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f7f6fb;
+}
+
+.stat-card.vacation .stat-icon {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.stat-card.parental .stat-icon {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.stat-card.unpaid .stat-icon {
+  background: #fce7f3;
+  color: #db2777;
+}
+
+.stat-card.total .stat-icon {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #16181c;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #71717a;
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.quick-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: "Raleway", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.quick-action-btn.primary {
+  background: #bbf146;
+  color: #000000;
+}
+
+.quick-action-btn.primary:hover {
+  background: #a8de2e;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(187, 241, 70, 0.3);
+}
+
+.quick-action-btn.secondary {
+  background: #ffffff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+}
+
+.quick-action-btn.secondary:hover {
+  background: #f8f9fa;
+  border-color: #c6c6c6;
+}
+
+.quick-action-btn i {
+  font-size: 16px;
+}
+
+.quick-action-btn.secondary i {
+  color: #ea4335;
+}
+
 .header-left {
   display: flex;
   flex-direction: column;
@@ -243,6 +482,82 @@ canvas {
   border-top-right-radius: 8px;
   position: relative;
   height: 90px;
+}
+
+.sync-button {
+  position: absolute;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: #bbf146;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.sync-button:hover {
+  background: #1f1f1f;
+}
+
+.sync-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sync-button.syncing i {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sync-button i {
+  font-size: 24px;
+}
+
+.sync-status {
+  width: 100%;
+  padding: 0;
+  text-align: center;
+  font-size: 14px;
+  font-family: "Raleway", sans-serif;
+  transition: all 0.3s;
+  height: 0;
+  overflow: hidden;
+}
+
+.sync-status.info,
+.sync-status.success,
+.sync-status.error {
+  padding: 12px 16px;
+  height: auto;
+}
+
+.sync-status.info {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.sync-status.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.sync-status.error {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 .history-header-content {
@@ -451,18 +766,18 @@ label {
 
 .date-container div {
   width: calc(100% - 40px);
-  height: 60px;
-  margin: 5px 20px;
-  padding: 10px 16px;
+  height: 44px;
+  margin: 4px 20px;
+  padding: 0 16px;
   border: 1px solid #ededed;
-  border-radius: 6px;
+  border-radius: 8px;
   box-sizing: border-box;
   background-color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: #16181c;
-  font-size: 16px;
+  font-size: 14px;
   opacity: 0;
   transform: translateY(0px);
   transition: height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
@@ -483,7 +798,7 @@ label {
 
 .date-container div span {
   color: #16181c;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
 }
 
@@ -491,7 +806,7 @@ label {
   background: none;
   border: none;
   cursor: pointer;
-  height: 60px;
+  height: 44px;
   width: 40px;
   background-image: url("images/remove-icon.png");
   background-repeat: no-repeat;
@@ -506,18 +821,24 @@ label {
 
 button.add-date {
   background-color: #bbf146;
-  height: 60px;
-  border: 1px solid #bbf146;
-  border-radius: 6px;
+  height: 44px;
+  border: none;
+  border-radius: 8px;
   color: #16181c;
-  font-weight: 500;
-  font-size: 18px;
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
-  padding: 10px 0;
+  padding: 0 16px;
   margin: 10px 20px;
   width: calc(100% - 40px);
   font-family: "Raleway", sans-serif;
-  font-weight: 600;
+  transition: all 0.2s;
+}
+
+button.add-date:hover {
+  background-color: #a8de2e;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(187, 241, 70, 0.3);
 }
 
 .footer {
@@ -537,11 +858,11 @@ button.add-date {
 
 .select-btn {
   display: flex;
-  height: 60px; /* Ensure height is 60px */
+  height: 48px;
   background: #fff;
-  padding: 0 16px; /* Adjust padding to ensure correct height */
-  font-size: 16px;
-  font-weight: 200;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
   border-radius: 6px;
   align-items: center;
   cursor: pointer;
@@ -626,7 +947,7 @@ button.add-date {
   width: 400px;
   padding: 0;
   background: #f7f6fb;
-  height: calc(100% - 62px);
+  height: calc(100% - 90px);
   overflow-y: auto;
   box-sizing: border-box;
 }
@@ -689,6 +1010,30 @@ button.add-date {
   margin-bottom: 8px;
 }
 
+.history-item-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gmail-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #bbf146;
+  color: #000000;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-item.previous .gmail-badge {
+  background: #e6f8b3;
+}
+
 .history-item-title {
   margin: 0;
   font-size: 20px;
@@ -729,11 +1074,13 @@ button.add-date {
 
 .no-history {
   display: none;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100%;
   padding: 48px 24px;
   text-align: center;
+  gap: 8px;
 }
 
 .no-history.visible {
@@ -746,9 +1093,363 @@ button.add-date {
   margin: 0;
 }
 
+.no-history p.hint {
+  font-size: 12px;
+  color: #a1a1aa;
+}
+
 .unauthorized-message {
   text-align: center;
   padding: 20px;
+}
+
+/* History Tab Styles */
+#history-tab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.history-tab-header {
+  padding: 10px 16px;
+  background: #f7f6fb;
+  display: flex;
+  justify-content: stretch;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #e4e4e7;
+}
+
+.sync-button-tab {
+  background: #ffffff;
+  border: 1px solid #dadce0;
+  color: #3c4043;
+  cursor: pointer;
+  padding: 0 16px;
+  border-radius: 18px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: "Raleway", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  width: 100%;
+  height: 36px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.sync-button-tab:hover {
+  background: #f8f9fa;
+  border-color: #c6c6c6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sync-button-tab:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sync-button-tab.syncing .sync-icon {
+  animation: spin 1s linear infinite;
+}
+
+.sync-button-tab i.bxl-gmail {
+  font-size: 18px;
+  color: #ea4335;
+}
+
+.sync-button-tab .sync-icon {
+  font-size: 16px;
+  color: #5f6368;
+  margin-left: auto;
+}
+
+.sync-status-tab {
+  width: 100%;
+  padding: 0;
+  text-align: center;
+  font-size: 13px;
+  font-family: "Raleway", sans-serif;
+  transition: all 0.3s;
+  height: 0;
+  overflow: hidden;
+}
+
+.sync-status-tab.info,
+.sync-status-tab.success,
+.sync-status-tab.error {
+  padding: 10px 16px;
+  height: auto;
+}
+
+.sync-status-tab.info {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.sync-status-tab.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.sync-status-tab.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.history-list-tab {
+  padding: 12px 16px;
+  background: #f7f6fb;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Year Section Styles */
+.year-section-tab {
+  margin-bottom: 8px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.year-header-tab {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: "Raleway", sans-serif;
+}
+
+.year-header-tab:hover {
+  background: #fafafa;
+}
+
+.year-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.year-title-tab {
+  font-size: 16px;
+  font-weight: 700;
+  color: #16181c;
+  margin: 0;
+}
+
+.year-count-tab {
+  background: #f4f4f5;
+  color: #71717a;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.year-section-tab.current .year-count-tab {
+  background: #bbf146;
+  color: #000000;
+}
+
+.year-toggle-tab {
+  color: #a1a1aa;
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.year-section-tab.open .year-toggle-tab {
+  transform: rotate(180deg);
+}
+
+.year-content-tab {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: #f7f6fb;
+}
+
+.year-section-tab.open .year-content-tab {
+  max-height: 1000px;
+}
+
+.year-items-tab {
+  padding: 8px 12px 12px;
+}
+
+.history-section-tab {
+  margin-bottom: 8px;
+}
+
+.section-title-tab {
+  font-family: "Raleway", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #a1a1aa;
+  margin: 0 0 8px 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-item-tab {
+  margin-bottom: 6px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  cursor: default;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.history-item-tab.upcoming {
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.history-item-tab.upcoming:hover {
+  border-color: #d4d4d8;
+}
+
+.history-item-tab.upcoming:hover .gmail-badge-tab {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.history-item-tab.upcoming:hover .history-item-date-tab,
+.history-item-tab.upcoming:hover .history-item-date-tab i {
+  color: #16181c;
+}
+
+.history-item-tab.previous {
+  background: #ffffff;
+  border: 1px solid #f4f4f5;
+}
+
+.history-item-tab.previous:hover {
+  border-color: #e4e4e7;
+}
+
+.history-item-tab.previous:hover .gmail-badge-tab {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.history-item-tab.previous:hover .history-item-date-tab,
+.history-item-tab.previous:hover .history-item-date-tab i {
+  color: #16181c;
+}
+
+.history-item-content-tab {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.history-item-title-wrapper-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.history-item-title-tab {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #16181c;
+}
+
+.gmail-badge-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #1a1a1a;
+  color: #bbf146;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.gmail-badge-tab i {
+  font-size: 10px;
+}
+
+.history-item-tab.previous .gmail-badge-tab {
+  background: #e4e4e7;
+  color: #71717a;
+}
+
+.history-item-days-tab {
+  background-color: #bbf146;
+  color: #000000;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.history-item-date-tab {
+  font-family: "Raleway", sans-serif;
+  font-size: 12px;
+  color: #a1a1aa;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.history-item-date-tab i {
+  font-size: 14px;
+  color: #d4d4d8;
+}
+
+.no-history-tab {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  padding: 48px 24px;
+  text-align: center;
+  gap: 12px;
+  background: #f7f6fb;
+}
+
+.no-history-tab.visible {
+  display: flex;
+}
+
+.no-history-tab i {
+  font-size: 64px;
+  color: #d4d4d8;
+  margin-bottom: 8px;
+}
+
+.no-history-tab p {
+  color: #71717a;
+  font-size: 14px;
+  margin: 0;
+  font-family: "Raleway", sans-serif;
+}
+
+.no-history-tab p.hint {
+  font-size: 12px;
+  color: #a1a1aa;
 }
 
 .unauthorized-image {
@@ -764,3 +1465,4 @@ button.add-date {
 .hidden {
   display: none !important;
 }
+

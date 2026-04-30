@@ -5,7 +5,7 @@
     <title>Gmail Sender</title>
     <link rel="stylesheet" href="fonts/fonts.css" />
     <link rel="stylesheet" href="icons/boxicons.min.css" />
-    <link rel="stylesheet" href="flatpickr/flatpickr.min.css" />
+    <link rel="stylesheet" href="litepicker/litepicker.css" />
     <link rel="stylesheet" href="style.css" />
     <script src="lib/confetti.js"></script>
   </head>
@@ -48,10 +48,71 @@
     <div class="tab-content-wrapper">
       <!-- Home Tab -->
       <div class="tab-content active" id="home-tab">
-        <div class="tab-placeholder">
-          <i class="bx bx-home-smile"></i>
-          <h2>Home</h2>
-          <p>Welcome to your absence management tool</p>
+        <div class="home-container">
+          <!-- Next Upcoming Absence Card -->
+          <div class="upcoming-card" id="upcoming-card">
+            <div class="upcoming-card-header">
+              <span class="upcoming-label">Next Absence</span>
+              <span class="upcoming-countdown" id="upcoming-countdown"></span>
+            </div>
+            <div class="upcoming-card-body">
+              <h2 class="upcoming-title" id="upcoming-title">No upcoming absences</h2>
+              <p class="upcoming-dates" id="upcoming-dates"></p>
+            </div>
+            <div class="upcoming-card-footer" id="upcoming-footer">
+              <button class="upcoming-action-btn" id="go-to-create">
+                <i class="bx bx-plus"></i>
+                Schedule one
+              </button>
+            </div>
+          </div>
+
+          <!-- Year Stats Section -->
+          <div class="year-stats-section">
+            <h3 class="stats-title" id="stats-year-title">2026 Overview</h3>
+            <div class="stats-grid">
+              <div class="stat-card vacation">
+                <div class="stat-icon"><i class="bx bx-sun"></i></div>
+                <div class="stat-info">
+                  <span class="stat-value" id="stat-vacation-days">0</span>
+                  <span class="stat-label">Vacation days</span>
+                </div>
+              </div>
+              <div class="stat-card parental">
+                <div class="stat-icon"><i class="bx bxs-baby-carriage"></i></div>
+                <div class="stat-info">
+                  <span class="stat-value" id="stat-parental-days">0</span>
+                  <span class="stat-label">Parental days</span>
+                </div>
+              </div>
+              <div class="stat-card unpaid">
+                <div class="stat-icon"><i class="bx bx-wallet"></i></div>
+                <div class="stat-info">
+                  <span class="stat-value" id="stat-unpaid-days">0</span>
+                  <span class="stat-label">Unpaid days</span>
+                </div>
+              </div>
+              <div class="stat-card total">
+                <div class="stat-icon"><i class="bx bx-calendar-check"></i></div>
+                <div class="stat-info">
+                  <span class="stat-value" id="stat-total-days">0</span>
+                  <span class="stat-label">Total days off</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="quick-actions">
+            <button class="quick-action-btn primary" id="quick-create">
+              <i class="bx bx-plus-circle"></i>
+              New Absence
+            </button>
+            <button class="quick-action-btn secondary" id="quick-sync">
+              <i class="bx bxl-gmail"></i>
+              Sync Gmail
+            </button>
+          </div>
         </div>
       </div>
 
@@ -86,10 +147,21 @@
 
       <!-- History Tab -->
       <div class="tab-content" id="history-tab">
-        <div class="tab-placeholder">
+        <div class="history-tab-header">
+          <button id="sync-btn-tab" class="sync-button-tab" title="Sync vacations from Gmail">
+            <i class="bx bxl-gmail"></i>
+            <span>Sync from Gmail</span>
+            <i class="bx bx-refresh sync-icon"></i>
+          </button>
+        </div>
+        <div class="sync-status-tab" id="sync-status-tab"></div>
+        <div class="history-list-tab" id="history-list-tab">
+          <!-- History items will be added here -->
+        </div>
+        <div class="no-history-tab" id="no-history-tab">
           <i class="bx bx-history"></i>
-          <h2>History</h2>
-          <p>Your absence history will appear here</p>
+          <p>No absence records yet.</p>
+          <p class="hint">Click the sync button above to import vacations from Gmail</p>
         </div>
       </div>
     </div>
@@ -100,20 +172,93 @@
       </button>
     </div>
 
-    <script src="flatpickr/flatpickr.min.js"></script>
+    <script src="litepicker/litepicker.js"></script>
     <script src="dropdown.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>
 
 <style>
-  .flatpickr-day.selected,
-  .flatpickr-day.startRange,
-  .flatpickr-day.endRange,
-  .flatpickr-day.selected:hover {
-    background: #bbf146;
-    border-color: #bbf146;
-    color: #000; /* Adjust text color if needed */
+  /* Litepicker customization */
+  :root {
+    --litepicker-container-months-color-bg: #ffffff;
+    --litepicker-month-header-color: #16181c;
+    --litepicker-button-prev-next-color: #16181c;
+    --litepicker-day-color: #16181c;
+    --litepicker-day-color-hover: #16181c;
+    --litepicker-is-in-range-color: #e6f8b3;
+    --litepicker-is-start-color: #bbf146;
+    --litepicker-is-start-color-bg: #bbf146;
+    --litepicker-is-end-color: #16181c;
+    --litepicker-is-end-color-bg: #bbf146;
+    --litepicker-highlighted-day-color: #16181c;
+    --litepicker-highlighted-day-color-bg: #bbf146;
+  }
+
+  .litepicker {
+    box-shadow: none !important;
+    border-radius: 12px !important;
+    font-family: "Raleway", sans-serif !important;
+    width: 340px !important;
+  }
+
+  .litepicker .container__months {
+    width: 100% !important;
+    box-shadow: none !important;
+    border-radius: 12px !important;
+  }
+
+  .litepicker .container__months .month-item {
+    width: 100% !important;
+    padding: 16px !important;
+  }
+
+  .litepicker .container__days {
+    gap: 4px;
+  }
+
+  .litepicker .container__days .day-item {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 15px !important;
+    border-radius: 8px !important;
+  }
+
+  .litepicker .container__days .day-item.is-start-date,
+  .litepicker .container__days .day-item.is-end-date {
+    background-color: #bbf146 !important;
+    color: #16181c !important;
+  }
+
+  .litepicker .container__days .day-item.is-in-range {
+    background-color: #e6f8b3 !important;
+  }
+
+  .litepicker .container__days .day-item:hover {
+    background-color: #f4f4f5;
+  }
+
+  .litepicker .month-item-header {
+    padding: 8px 0 16px 0 !important;
+  }
+
+  .litepicker .month-item-name,
+  .litepicker .month-item-year {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+  }
+
+  .litepicker .month-item-weekdays-row > div {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #71717a !important;
+    padding: 8px 0 !important;
+  }
+
+  .litepicker .button-previous-month,
+  .litepicker .button-next-month {
+    width: 36px !important;
+    height: 36px !important;
   }
 
   /* Unauthorized message styling */
