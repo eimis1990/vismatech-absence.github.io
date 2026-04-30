@@ -271,6 +271,14 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("unauthorized-message").classList.remove("hidden");
   }
 
+  // Allowed email domains for Visma employees
+  const allowedDomains = [
+    "visma.com",
+    "mystore.no",
+    "suresync.nl",
+    "idella.com"
+  ];
+
   // Fetch the user's email and check authorization
   chrome.identity.getProfileUserInfo(
     { accountStatus: "ANY" },
@@ -278,7 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const email = userInfo.email;
       const domain = email.split("@")[1]; // Get the domain part of the email
 
-      if (domain !== "visma.com") {
+      if (!allowedDomains.includes(domain)) {
         isAuthorized = false;
         showUnauthorizedMessage();
       } else {
