@@ -1,0 +1,8 @@
+/* Raleway Font - Local Bundle (Variable Font) */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(raleway.woff2) format('woff2');
+}

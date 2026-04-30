@@ -48,22 +48,49 @@ async function sendEmail(authToken, emailContent) {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // Security: Validate that the message comes from within this extension
+  // Reject messages from content scripts or external sources
+  if (sender.id !== chrome.runtime.id) {
+    sendResponse({ success: false, error: 'Unauthorized sender' });
+    return true;
+  }
+
+  // Reject messages from content scripts (sender.tab would be defined)
+  // Only accept messages from extension pages (popup, options, etc.)
+  if (sender.tab) {
+    sendResponse({ success: false, error: 'Messages from content scripts not allowed' });
+    return true;
+  }
+
+  // Validate message structure
+  if (!request || typeof request !== 'object') {
+    sendResponse({ success: false, error: 'Invalid message format' });
+    return true;
+  }
+
   if (request.action === 'sendEmail') {
+    // Validate email content exists
+    if (!request.email || typeof request.email !== 'string') {
+      sendResponse({ success: false, error: 'Invalid email content' });
+      return true;
+    }
+
     chrome.identity.getAuthToken({ interactive: true }, async (token) => {
       if (chrome.runtime.lastError) {
-        console.error('Error getting auth token:', chrome.runtime.lastError);
         sendResponse({ success: false, error: chrome.runtime.lastError.message });
       } else {
-        console.log('Auth token obtained');
         try {
           const result = await sendEmail(token, request.email);
           sendResponse(result);
         } catch (error) {
-          console.error('Error in sendEmail:', error);
           sendResponse({ success: false, error: error.message });
         }
       }
     });
     return true;  // Will respond asynchronously.
   }
+
+  // Unknown action
+  sendResponse({ success: false, error: 'Unknown action' });
+  return true;
 });
