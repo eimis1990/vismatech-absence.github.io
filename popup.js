@@ -1,8 +1,68 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Tab switching functionality
+  const tabButtons = document.querySelectorAll(".tab-button");
+  const tabContents = document.querySelectorAll(".tab-content");
+  const tabIndicator = document.querySelector(".tab-indicator");
+
+  function switchTab(targetTab, buttonIndex) {
+    // Remove active class from all buttons and contents
+    tabButtons.forEach((btn) => btn.classList.remove("active"));
+    tabContents.forEach((content) => {
+      content.classList.remove("active");
+      content.classList.add("slide-out-left");
+    });
+
+    // Add active class to clicked button
+    tabButtons[buttonIndex].classList.add("active");
+
+    // Move indicator
+    const indicatorWidth = 100 / tabButtons.length;
+    tabIndicator.style.left = `${indicatorWidth * buttonIndex}%`;
+
+    // Show/hide footer based on active tab
+    const footer = document.querySelector(".footer");
+    if (targetTab === "new-absence") {
+      footer.style.display = "block";
+    } else {
+      footer.style.display = "none";
+    }
+
+    // Show target content with animation
+    setTimeout(() => {
+      tabContents.forEach((content) => content.classList.remove("slide-out-left"));
+      const targetContent = document.getElementById(`${targetTab}-tab`);
+      if (targetContent) {
+        targetContent.classList.add("active");
+      }
+    }, 150);
+  }
+
+  tabButtons.forEach((button, index) => {
+    button.addEventListener("click", () => {
+      const targetTab = button.getAttribute("data-tab");
+      switchTab(targetTab, index);
+    });
+  });
+
+  // Initialize indicator position and footer visibility
+  const activeTabIndex = Array.from(tabButtons).findIndex((btn) =>
+    btn.classList.contains("active")
+  );
+  if (activeTabIndex !== -1) {
+    const indicatorWidth = 100 / tabButtons.length;
+    tabIndicator.style.left = `${indicatorWidth * activeTabIndex}%`;
+  }
+
+  // Hide footer initially since we start on Home tab
+  const footer = document.querySelector(".footer");
+  const initialActiveTab = tabButtons[activeTabIndex]?.getAttribute("data-tab");
+  if (initialActiveTab !== "new-absence") {
+    footer.style.display = "none";
+  }
+
   const dateContainer = document.getElementById("date-container");
   const addDateButton = document.getElementById("add-date-button");
   const sendButton = document.getElementById("send");
-  const historyButton = document.getElementById("history-btn");
   const content = document.querySelector(".content");
   const sBtn_text = document.querySelector(".sBtn-text");
   const options = document.querySelectorAll(".option");
@@ -16,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let tempSelectedDates = [];
   let confirmedDates = [];
   let isAuthorized = true;
+  let fp = null; // Flatpickr instance, initialized after storage load
 
   // Function to disable the Send button
   function disableSendButton() {
@@ -23,11 +84,9 @@ document.addEventListener("DOMContentLoaded", () => {
     sendButton.disabled = true;
   }
 
-  // Function to show unauthorized message and disable history button
+  // Function to show unauthorized message
   function showUnauthorizedMessage() {
     document.body.classList.add("unauthorized");
-    historyButton.classList.add("disabled");
-    historyButton.disabled = true;
     document.getElementById("unauthorized-message").classList.remove("hidden");
   }
 
@@ -42,38 +101,43 @@ document.addEventListener("DOMContentLoaded", () => {
         isAuthorized = false;
         showUnauthorizedMessage();
       } else {
-        console.log("User is authorized");
         isAuthorized = true;
       }
     }
   );
 
-  // Retrieve and set saved subject from localStorage
-  const defaultSubject = "Vacation";
-  const savedSubject = localStorage.getItem("selectedSubject");
-  if (savedSubject) {
-    sBtn_text.innerText = savedSubject;
-  } else {
-    sBtn_text.innerText = defaultSubject;
-  }
+  // Initialize the app after loading saved data from chrome.storage.local
+  initializeApp();
 
-  // Retrieve saved dates from localStorage
-  const savedDates = JSON.parse(localStorage.getItem("selectedDates")) || [];
-  const fullDateRange = [];
+  async function initializeApp() {
+    const defaultSubject = "Vacation";
 
-  // Expand the date ranges to include all dates between start and end
-  savedDates.forEach((range) => {
-    addDateToContainer(range.start, range.end);
-    let currentDate = new Date(range.start);
-    const endDate = new Date(range.end);
+    // Retrieve saved subject and dates from chrome.storage.local
+    const result = await chrome.storage.local.get(["selectedSubject", "selectedDates"]);
+    const savedSubject = result.selectedSubject;
+    const savedDates = result.selectedDates || [];
 
-    while (currentDate <= endDate) {
-      fullDateRange.push(new Date(currentDate));
-      currentDate.setDate(currentDate.getDate() + 1);
+    if (savedSubject) {
+      sBtn_text.innerText = savedSubject;
+    } else {
+      sBtn_text.innerText = defaultSubject;
     }
-  });
 
-  const fp = flatpickr("#add-date-button", {
+    const fullDateRange = [];
+
+    // Expand the date ranges to include all dates between start and end
+    savedDates.forEach((range) => {
+      addDateToContainer(range.start, range.end);
+      let currentDate = new Date(range.start);
+      const endDate = new Date(range.end);
+
+      while (currentDate <= endDate) {
+        fullDateRange.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    });
+
+    fp = flatpickr("#add-date-button", {
     mode: "range", // Default mode
     minDate: "today",
     dateFormat: "Y-m-d",
@@ -151,17 +215,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Function to clear selected dates
-  function clearSelectedDates() {
+  async function clearSelectedDates() {
     dateContainer.innerHTML = "";
-    localStorage.removeItem("selectedDates");
+    await chrome.storage.local.remove("selectedDates");
     updateSendButtonState();
   }
 
   // Update the calendar mode when the subject changes
   options.forEach((option) => {
-    option.addEventListener("click", () => {
+    option.addEventListener("click", async () => {
       sBtn_text.innerText = option.dataset.value;
-      localStorage.setItem("selectedSubject", option.dataset.value);
+      await chrome.storage.local.set({ selectedSubject: option.dataset.value });
       updateCalendarMode();
     });
   });
@@ -190,10 +254,10 @@ document.addEventListener("DOMContentLoaded", () => {
     fp.open();
   });
 
-  function handleSelectedDate() {
+  async function handleSelectedDate() {
     if (tempSelectedDates.length === 0) return;
-    const existingDates =
-      JSON.parse(localStorage.getItem("selectedDates")) || [];
+    const result = await chrome.storage.local.get("selectedDates");
+    const existingDates = result.selectedDates || [];
     tempSelectedDates.sort((a, b) => a - b);
     let startDate = new Date(tempSelectedDates[0]);
     let endDate = new Date(tempSelectedDates[tempSelectedDates.length - 1]);
@@ -212,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
       existingDates.push({ start: formattedStart, end: formattedEnd });
     }
 
-    localStorage.setItem("selectedDates", JSON.stringify(existingDates));
+    await chrome.storage.local.set({ selectedDates: existingDates });
     updateSendButtonState();
 
     confirmedDates = [...tempSelectedDates];
@@ -299,12 +363,13 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/\D/g, ".");
   }
 
-  function removeDateFromStorage(start, end) {
-    let savedDates = JSON.parse(localStorage.getItem("selectedDates")) || [];
+  async function removeDateFromStorage(start, end) {
+    const result = await chrome.storage.local.get("selectedDates");
+    let savedDates = result.selectedDates || [];
     savedDates = savedDates.filter(
       (range) => !(range.start === start && range.end === end)
     );
-    localStorage.setItem("selectedDates", JSON.stringify(savedDates));
+    await chrome.storage.local.set({ selectedDates: savedDates });
 
     // Update flatpickr after removing date
     const allDates = savedDates.flatMap((range) => {
@@ -356,8 +421,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const dateDivs = dateContainer.querySelectorAll("div");
 
-    // Determine the correct subject title
+    // Determine the correct subject title and display name
     let subjectTitle;
+    let subjectDisplayName = sBtn_text.innerText;
     switch (sBtn_text.innerText) {
       case "Vacation":
         subjectTitle = "Atostogos";
@@ -374,6 +440,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (dateDivs.length > 0 && !sendButton.classList.contains("disabled")) {
+      // Build confirmation message
+      const dateCount = dateDivs.length;
+      const datesList = Array.from(dateDivs).map(div => {
+        const dates = JSON.parse(div.dataset.dates);
+        if (dates.start === dates.end) {
+          return dates.start;
+        }
+        return `${dates.start} to ${dates.end}`;
+      }).join('\n');
+
+      const confirmMessage = `Send ${dateCount} ${subjectDisplayName} request${dateCount > 1 ? 's' : ''}?\n\nDates:\n${datesList}`;
+
+      // Show confirmation dialog
+      if (!confirm(confirmMessage)) {
+        return; // User cancelled
+      }
+
       // Start the sending process
       sendButton.classList.add("sending");
       sendButton.disabled = true;
@@ -494,8 +577,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Add history button click handler
-  historyButton.addEventListener("click", () => {
-    window.location.href = "history.html";
-  });
+  } // End of initializeApp
 });

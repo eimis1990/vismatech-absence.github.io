@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "VismaTech - Absence Manager",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "description": "A simple extension to send email/emails to your vacation bot",
   "permissions": ["identity", "identity.email", "storage"],
   "background": {
@@ -17,12 +17,6 @@
       "https://www.googleapis.com/auth/userinfo.email"
     ]
   },
-  "web_accessible_resources": [
-    {
-      "resources": ["flatpickr/*", "lib/*"],
-      "matches": ["<all_urls>"]
-    }
-  ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
