@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "VismaTech - Absence Manager",
   "version": "2.0.0",
-  "description": "A simple extension to send email/emails to your vacation bot",
+  "description": "A simple extension to send email/emails to your vacation bot and sync vacation history from Gmail",
   "permissions": ["identity", "identity.email", "storage"],
   "background": {
     "service_worker": "background.js"
@@ -14,6 +14,7 @@
     "client_id": "855141560534-4kdo3uclrricq3ee029rn93fspjcko3n.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/gmail.send",
+      "https://www.googleapis.com/auth/gmail.readonly",
       "https://www.googleapis.com/auth/userinfo.email"
     ]
   },

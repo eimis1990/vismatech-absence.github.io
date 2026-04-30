@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const backButton = document.getElementById("back-btn");
+  const syncButton = document.getElementById("sync-btn");
+  const syncStatus = document.getElementById("sync-status");
   const historyList = document.getElementById("history-list");
   const noHistory = document.getElementById("no-history");
 
@@ -7,6 +9,49 @@ document.addEventListener("DOMContentLoaded", () => {
   backButton.addEventListener("click", () => {
     window.location.href = "popup.html";
   });
+
+  // Sync button handler
+  syncButton.addEventListener("click", async () => {
+    syncButton.disabled = true;
+    syncButton.classList.add("syncing");
+    showSyncStatus("Syncing vacations from Gmail...", "info");
+
+    try {
+      const response = await new Promise((resolve) => {
+        chrome.runtime.sendMessage(
+          { action: "syncGmailVacations" },
+          resolve
+        );
+      });
+
+      if (response.success) {
+        const message = response.imported > 0 
+          ? `Successfully imported ${response.imported} vacation${response.imported > 1 ? 's' : ''} from Gmail!`
+          : "No new vacations found in Gmail.";
+        showSyncStatus(message, "success");
+        renderHistory(); // Refresh the history display
+      } else {
+        showSyncStatus(`Error: ${response.error}`, "error");
+      }
+    } catch (error) {
+      console.error("Sync error:", error);
+      showSyncStatus("Failed to sync vacations from Gmail", "error");
+    } finally {
+      syncButton.disabled = false;
+      syncButton.classList.remove("syncing");
+      // Hide status message after 5 seconds
+      setTimeout(() => {
+        syncStatus.innerHTML = "";
+        syncStatus.className = "sync-status";
+      }, 5000);
+    }
+  });
+
+  // Show sync status message
+  function showSyncStatus(message, type) {
+    syncStatus.innerHTML = message;
+    syncStatus.className = `sync-status ${type}`;
+  }
 
   // Show empty state
   function showEmptyState() {
@@ -89,9 +134,16 @@ document.addEventListener("DOMContentLoaded", () => {
           )}</div>`
         : "";
 
+    const gmailBadge = item.source === "gmail" 
+      ? '<span class="gmail-badge"><i class="bx bxl-gmail"></i> Gmail</span>'
+      : "";
+
     historyItem.innerHTML = `
       <div class="history-item-content">
-        <h3 class="history-item-title">${displaySubject}</h3>
+        <div class="history-item-title-wrapper">
+          <h3 class="history-item-title">${displaySubject}</h3>
+          ${gmailBadge}
+        </div>
         ${daysContent}
       </div>
       <p class="history-item-date">${formatDate(item.startDate)} - ${formatDate(

@@ -3,10 +3,62 @@ body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f9f9f9;
+    background: linear-gradient(to bottom, #FFFFFF, #EFF2F5);
     color: #333;
     padding-top: 80px; /* Ensure content is not hidden under the navbar */
     min-width: 650px; /* Set minimum width for the page */
+    position: relative;
+    min-height: 100vh;
+}
+
+/* Dashed Bottom Fade Grid */
+.background-grid {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: 
+        linear-gradient(to right, #e7e5e4 1px, transparent 1px),
+        linear-gradient(to bottom, #e7e5e4 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 0;
+    mask-image: 
+        repeating-linear-gradient(
+            to right,
+            black 0px,
+            black 3px,
+            transparent 3px,
+            transparent 8px
+        ),
+        repeating-linear-gradient(
+            to bottom,
+            black 0px,
+            black 3px,
+            transparent 3px,
+            transparent 8px
+        ),
+        radial-gradient(ellipse 100% 80% at 50% 100%, #000 50%, transparent 90%);
+    -webkit-mask-image: 
+        repeating-linear-gradient(
+            to right,
+            black 0px,
+            black 3px,
+            transparent 3px,
+            transparent 8px
+        ),
+        repeating-linear-gradient(
+            to bottom,
+            black 0px,
+            black 3px,
+            transparent 3px,
+            transparent 8px
+        ),
+        radial-gradient(ellipse 100% 80% at 50% 100%, #000 50%, transparent 90%);
+    mask-composite: intersect;
+    -webkit-mask-composite: source-in;
 }
 
 .navbar {
@@ -63,6 +115,8 @@ body {
     text-align: center;
     margin: 50px 0;
     padding: 0 20px; /* Added padding for better mobile view */
+    position: relative;
+    z-index: 1;
 }
 
 .header h1 {
@@ -90,6 +144,7 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     position: relative; /* Relative positioning for dynamic adjustments */
     min-height: calc(100% + 160px); /* Ensure it's 160px taller than the content */
+    z-index: 1;
 }
 
 .main-section .text-content {
